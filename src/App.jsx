@@ -7,7 +7,7 @@ import InputCreate from "./components/InputCreate.jsx";
 
 const App = () => {
   const [data, setData] = useState(null)
-  const urlApi = 'http://localhost:3000'
+  const urlApi = import.meta.env.VITE_URL_API
 
 const fetchData = async () => {
   try {
@@ -21,7 +21,7 @@ const fetchData = async () => {
 
 useEffect(() => {
   fetchData()
-}, [])
+}, [data])
 
   return (
     <Router>
@@ -34,7 +34,7 @@ useEffect(() => {
         ? (<div>cargando...</div>) 
         : 
           <Routes>
-            <Route path="/" element={<Home data={data} />} />
+            <Route path="/" element={<Home data={data}/>} />
            
             {data.map(item => (
               <Route key={item._id} path={`/${item._id}`} element={<ItemDetailPage item={item}/>} />

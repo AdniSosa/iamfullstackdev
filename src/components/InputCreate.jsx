@@ -6,34 +6,59 @@ import { useState } from "react"
 import styles from './InputCreate.module.css'
 
 const InputCreate = () => {
-    const [payload, setPayload] = useState({
-        title: ''
-    })
+    const [title, setTitle] = useState('')
+    const payload = {title}
+    const [createdTask, setCreatedTask] = useState('');
 
     const setTaskFunction = (e) => {
-        setPayload({
-         title: e.target.value})
+        setTitle(e.target.value
+            
+        )
      }
 
-    const handleSubmit = () => {
-        
-        let urlApi = 'http://localhost:3000/create'
-       fetch(urlApi,
-            {
-                method: 'POST', // Método HTTP
-                headers: {
-                    'Content-Type': 'application/json', // Indicamos que el contenido es JSON
-                },
-                body: JSON.stringify(payload), // Convertimos el payload de JS a JSON
-            })
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        let urlApi = import.meta.env.VITE_URL_API + '/create'
+
+        try {
+            const response = await fetch(urlApi,
+                {
+                    method: 'POST', // Método HTTP
+                    headers: {
+                        'Content-Type': 'application/json', // Indicamos que el contenido es JSON
+                    },
+                    body: JSON.stringify(payload), // Convertimos el payload de JS a JSON
+                })
+
+                if(!response.ok) throw new Error (`The task couldn't be created`);
+
+                const data =  await response.json();
+                setCreatedTask(`Ok, the task has been created: '${payload.title}'`)
+                setTitle('')
+                console.log(createdTask)
+        } catch (error) {
+            console.error(error)
+        }
             
     }
  
     return (
-        <form action="/create" className={styles.input} >
-            <input type="text" placeholder="Escribe una tarea" name='task'onChange={setTaskFunction}/>
-            <button type="submit" onClick={handleSubmit}>Guardar</button>
-        </form>
+        <div>
+            <form action="/create" className={styles.input} >
+                <input 
+                    type="text" 
+                    placeholder="Escribe una tarea" 
+                    name='task'
+                    value={title}
+                    onChange={setTaskFunction}
+                />
+                <button type="submit" onClick={handleSubmit}>Guardar</button>
+
+            </form>
+            {createdTask && <p>{createdTask}</p>}
+           
+        </div>
     )
 }
 
